@@ -3,4 +3,4 @@ This is a simplistic card game where a deck consisting of 52 cards (A, 2 , ....1
 
 
 ## Game Rules: 
-do it later
+
