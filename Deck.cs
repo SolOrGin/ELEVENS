@@ -1,69 +1,51 @@
-using System;
-using System.Collections.Generic;
+namespace Elevens.Core;
+using System.Security.Cryptography;
 
-public class Deck
+public sealed class Deck
 {
-    private List <Card> cards = new List<Card>();
-    // so we create a private list of CArds
-    // then our deck is created by looping through the four suits and 13 values of cards to create our Deck
+    private readonly List<Card> _cards = new();
 
-    
-    public Deck ()
+    public int Count => _cards.Count;
+
+    public Deck()
     {
-        for (int i = 0; i < Card.Suits.Length; i++ )
+        foreach (Suit s in Enum.GetValues(typeof(Suit)))
         {
-            for (int j = 0; j < Card.Values.Length; j++)
+            for (int r = 1; r<=13; r++)
             {
-                cards.Add(new Card(Card.Suits[i], Card.Values[j]));
-
+                _cards.Add(new Card(r, s));
             }
         }
-        Shuffle(); // so after loading ordered deck we now have our shuffle method so we can shuffle our deck
     }
 
-    // is the shuffle returning a value? public or private? and the how are we shuffling these cards? our deck is a list of variable cards
-    // since we dont need to access this shuffle funtion, we dont care to show it to the public, this is something the spawn of the deck takes care of
-
-    private Random rng = new Random();
-    private void Shuffle()
+    public bool IsEmpty()
     {
-        /*AI says that we need to divide our list into two, one side that is shuffled and the other unshuffled
-        and it doesnt matter where we start but it looks cleaner if we start from the end. 
-        begin from the last card and work our way down
+        return _cards.Count == 0;
+    }
 
-        */
-        for (int i = cards.Count - 1; i > 0; i--)
+    public void Shuffle()
+    {
+        //Random random = new Random();
+        
+        for(int i = _cards.Count - 1; i > 0; i--)
         {
-            /* i is the end of the unshuffled deck so in this case since we have 52 cards our end right now is 52
-               then we randomly select a card from the unshuffled deck and that cards value is stored onto j but we need to swap
-
-
-            */
-            int j = rng.Next(i + 1);
-
-            Card temp = cards[i];  // we move this card that is located at the end of the deck onto a seperate place
-            cards[i] = cards[j];   // then we move the card that was selected onto the last position of the deck
-            cards[j] = temp;      // now that empty space where we took the card from is replaced with the card that was moved to the side
-                                  // we continue to do this until we have all cards shuffled
-
-
+            
+            // int j = Random.Next(0, 52);
+            
+            int j = RandomNumberGenerator.GetInt32(i+1);
+            (_cards[i], _cards[j]) = (_cards[j], _cards[i]);
         }
-
     }
 
-    // for the deal what are we dealing? what are we doing and what are we returning?
-    // we are dealing cards, we are dealing 9 cards ... but are we dealing the cards here? isnt the table taking care of this?
-    //
-
-    public Card deal()
+    public Card DealCard()
     {
+        if (Count == 0)
+        {
+            throw new InvalidOperationException("Deck is empty");
+        }
+        Card top = _cards[Count - 1];
+        _cards.RemoveAt(Count - 1);
+        return top;
 
     }
-
-
-
-
-
-         
-
 }
